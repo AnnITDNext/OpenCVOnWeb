@@ -1,3 +1,4 @@
+import os
 from flask import Flask, render_template, request, jsonify
 import cv2
 import numpy as np
@@ -32,7 +33,7 @@ def upload_image():
 
     # Draw rectangles around faces
     for (x, y, w, h) in faces:
-        cv2.rectangle(img, (x, y), (x+w, y+h), (255, 0, 0), 2)
+        cv2.rectangle(img, (x, y), (x+w, y+h), (255, 102, 0), 2)
 
     # Convert the processed image (with rectangles) to base64
     _, processed_buffer = cv2.imencode('.jpg', img)
@@ -46,4 +47,5 @@ def upload_image():
     })
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port)
