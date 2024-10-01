@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>OpenCV Web App</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="p-6">
+    <h2 class="text-2xl font-bold mb-4">Upload a photo for detection</h2>
+    <form id="uploadForm" enctype="multipart/form-data" class="mb-8">
+      <input
+        type="file"
+        id="imageFile"
+        name="file"
+        accept="image/*"
+        required
+        class="mb-4"
+      />
+      <input
+        type="submit"
+        class="w-full bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-300"
+        value="Upload and Detect"
+      />
+    </form>
+
+    <!-- Flex container to align images side by side -->
+    <div class="flex justify-center items-start space-x-6">
+      <!-- Original image -->
+      <div>
+        <h3 class="text-lg font-semibold mb-2">Before Detection:</h3>
+        <img
+          id="originalImage"
+          src=""
+          alt="Original image will appear here"
+          class="border border-gray-300 rounded shadow"
+          style="max-width: 500px"
+        />
+      </div>
+
+      <!-- Processed image -->
+      <div>
+        <h3 class="text-lg font-semibold mb-2">After Detection:</h3>
+        <img
+          id="processedImage"
+          src=""
+          alt="Processed image will appear here"
+          class="border border-gray-300 rounded shadow"
+          style="max-width: 500px"
+        />
+      </div>
+    </div>
+
+    <script>
+      document.getElementById("uploadForm").onsubmit = async function (event) {
+        event.preventDefault();
+
+        const formData = new FormData();
+        const imageFile = document.getElementById("imageFile").files[0];
+        formData.append("file", imageFile);
+
+        const response = await fetch("/upload", {
+          method: "POST",
+          body: formData,
+        });
+
+        const data = await response.json();
+        if (data.success) {
+          // Show the original image
+          const originalImgElement = document.getElementById("originalImage");
+          originalImgElement.src =
+            "data:image/jpeg;base64," + data.original_image;
+
+          // Show the processed image
+          const processedImgElement = document.getElementById("processedImage");
+          processedImgElement.src =
+            "data:image/jpeg;base64," + data.processed_image;
+        } else {
+          alert("Error during detection.");
+        }
+      };
+    </script>
+  </body>
+</html>
